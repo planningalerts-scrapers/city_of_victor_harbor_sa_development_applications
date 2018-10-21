@@ -332,10 +332,12 @@ function parseApplicationElements(elements: Element[], startElement: Element, in
     // Get the received date.
 
     let receivedDateText = "";
-    if (elements.find(element => element.text.trim() === "Planning Approval:") === undefined)
-        receivedDateText = getRightText(elements, "Date Recieved:", "Subject Land:", "Planning Cancelled:");  // note that "Recieved" is spelt incorrectly (it should be "Received")
-    else
+    if (elements.find(element => element.text.trim() === "Planning Approval:") !== undefined)
         receivedDateText = getRightText(elements, "Date Recieved:", "Subject Land:", "Planning Approval:");  // note that "Recieved" is spelt incorrectly (it should be "Received")
+    else if (elements.find(element => element.text.trim() === "Planning Cancelled:") !== undefined)
+        receivedDateText = getRightText(elements, "Date Recieved:", "Subject Land:", "Planning Cancelled:");  // note that "Recieved" is spelt incorrectly (it should be "Received")
+    else if (elements.find(element => element.text.trim() === "Planning Refused:") !== undefined)
+        receivedDateText = getRightText(elements, "Date Recieved:", "Subject Land:", "Planning Refused:");  // note that "Recieved" is spelt incorrectly (it should be "Received")
     let receivedDate = (receivedDateText === undefined) ? undefined : moment(receivedDateText.trim(), "D/MM/YYYY", true);
 
     // Get the address.

@@ -111,12 +111,6 @@ function intersect(rectangle1: Rectangle, rectangle2: Rectangle): Rectangle {
         return { x: 0, y: 0, width: 0, height: 0 };
 }
 
-// Calculates the area of a rectangle.
-
-function getArea(rectangle: Rectangle) {
-    return rectangle.width * rectangle.height;
-}
-
 // Calculates the square of the Euclidean distance between two elements.
 
 function calculateDistance(element1: Element, element2: Element) {
@@ -343,11 +337,18 @@ function parseApplicationElements(elements: Element[], startElement: Element, in
     // Get the address.
 
     let address = getDownText(elements, "Subject Land:", "Development Description", undefined);
-    if (address === undefined || address.trim() === "") {
+    if (address === undefined || address.trim() === "" || address.trim().replace(/\s/g, "") === "000") {
         let elementSummary = elements.map(element => `[${element.text}]`).join("");
         console.log(`Could not find the address for the current development application.  The development application will be ignored.  Elements: ${elementSummary}`);
         return undefined;
     }
+
+    address = formatAddress(address
+        .replace(/Victor Harborüvictor Harbor/g, "Victor Harbor")
+        .replace(/Avenueüavenue/g, "Avenue")
+        .replace(/ü/g, " ")
+        .replace(/Ü/g, " ")
+        .trim());
 
     return {
         applicationNumber: applicationNumber,

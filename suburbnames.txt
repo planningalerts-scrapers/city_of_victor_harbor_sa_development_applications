@@ -1,0 +1,11 @@
+Back Valley,Back Valley SA 5211
+Encounter Bay,Encounter Bay SA 5211
+Hayborough,Hayborough SA 5211
+Hindmarsh Tiers,Hindmarsh Tiers SA 5202
+Hindmarsh Valley,Hindmarsh Valley SA 5211
+Inman Valley,Inman Valley SA 5211
+Lower Inman Valley,Lower Inman Valley SA 5211
+McCracken,McCracken SA 5211
+Mount Jagged,Mount Jagged SA 5211
+Victor Harbor,Victor Harbor SA 5211
+Waitpinga,Waitpinga SA 5211

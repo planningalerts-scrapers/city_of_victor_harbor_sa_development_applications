@@ -158,6 +158,129 @@ function getRightElement(elements: Element[], element: Element) {
     return (closestElement.text === undefined) ? undefined : closestElement;
 }
 
+// Gets the text to the right in a rectangle, where the rectangle is delineated by the positions
+// in which the three specified strings of (case sensitive) text are found.
+
+function getRightText(elements: Element[], topLeftText: string, rightText: string, bottomText: string) {
+    // Construct a bounding rectangle in which the expected text should appear.  Any elements
+    // over 50% within the bounding rectangle will be assumed to be part of the expected text.
+
+    let topLeftElement = elements.find(element => element.text.trim() == topLeftText || element.text.trim() == topLeftText + ":");
+    let rightElement = (rightText === undefined) ? undefined : elements.find(element => element.text.trim() == rightText || element.text.trim() == rightText + ":");
+    let bottomElement = (bottomText === undefined) ? undefined: elements.find(element => element.text.trim() == bottomText || element.text.trim() == bottomText + ":");
+    if (topLeftElement === undefined)
+        return undefined;
+
+    let x = topLeftElement.x + topLeftElement.width;
+    let y = topLeftElement.y;
+    let width = (rightElement === undefined) ? Number.MAX_VALUE : (rightElement.x - x);
+    let height = (bottomElement === undefined) ? Number.MAX_VALUE : (bottomElement.y - y);
+
+    let bounds: Rectangle = { x: x, y: y, width: width, height: height };
+
+    // Gather together all elements that are at least 50% within the bounding rectangle.
+
+    let intersectingElements: Element[] = []
+    for (let element of elements) {
+        let intersectingBounds = intersect(element, bounds);
+        let intersectingArea = intersectingBounds.width * intersectingBounds.height;
+        let elementArea = element.width * element.height;
+        if (elementArea > 0 && intersectingArea * 2 > elementArea && element.text !== ":")
+            intersectingElements.push(element);
+    }
+
+    // Sort the elements by Y co-ordinate and then by X co-ordinate.
+
+    let elementComparer = (a, b) => (a.y > b.y) ? 1 : ((a.y < b.y) ? -1 : ((a.x > b.x) ? 1 : ((a.x < b.x) ? -1 : 0)));
+    intersectingElements.sort(elementComparer);
+
+    // Join the elements into a single string.
+
+    return intersectingElements.map(element => element.text).join(" ").trim().replace(/\s\s+/g, " ");
+}
+
+// Gets the text to the left in a rectangle, where the rectangle is delineated by the positions
+// in which the three specified strings of (case sensitive) text are found.
+
+function getLeftText(elements: Element[], topRightText: string, leftText: string, bottomText: string) {
+    // Construct a bounding rectangle in which the expected text should appear.  Any elements
+    // over 50% within the bounding rectangle will be assumed to be part of the expected text.
+
+    let topRightElement = elements.find(element => element.text.trim() == topRightText || element.text.trim() == topRightText + ":");
+    let leftElement = (leftText === undefined) ? undefined : elements.find(element => element.text.trim() == leftText || element.text.trim() == leftText + ":");
+    let bottomElement = (bottomText === undefined) ? undefined: elements.find(element => element.text.trim() == bottomText || element.text.trim() == bottomText + ":");
+    if (topRightElement === undefined)
+        return undefined;
+
+    let x = (leftElement === undefined) ? 0 : (leftElement.x + leftElement.width);
+    let y = topRightElement.y;
+    let width = topRightElement.x - x;
+    let height = (bottomElement === undefined) ? Number.MAX_VALUE : (bottomElement.y - y);
+
+    let bounds: Rectangle = { x: x, y: y, width: width, height: height };
+
+    // Gather together all elements that are at least 50% within the bounding rectangle.
+
+    let intersectingElements: Element[] = []
+    for (let element of elements) {
+        let intersectingBounds = intersect(element, bounds);
+        let intersectingArea = intersectingBounds.width * intersectingBounds.height;
+        let elementArea = element.width * element.height;
+        if (elementArea > 0 && intersectingArea * 2 > elementArea && element.text !== ":")
+            intersectingElements.push(element);
+    }
+
+    // Sort the elements by Y co-ordinate and then by X co-ordinate.
+
+    let elementComparer = (a, b) => (a.y > b.y) ? 1 : ((a.y < b.y) ? -1 : ((a.x > b.x) ? 1 : ((a.x < b.x) ? -1 : 0)));
+    intersectingElements.sort(elementComparer);
+
+    // Join the elements into a single string.
+
+    return intersectingElements.map(element => element.text).join(" ").trim().replace(/\s\s+/g, " ");
+}
+
+// Gets the text downwards in a rectangle, where the rectangle is delineated by the positions in
+// which the three specified strings of (case sensitive) text are found.
+
+function getDownText(elements: Element[], topText: string, rightText: string, bottomText: string) {
+    // Construct a bounding rectangle in which the expected text should appear.  Any elements
+    // over 50% within the bounding rectangle will be assumed to be part of the expected text.
+
+    let topElement = elements.find(element => element.text.trim() == topText);
+    let rightElement = (rightText === undefined) ? undefined : elements.find(element => element.text.trim() == rightText);
+    let bottomElement = (bottomText === undefined) ? undefined: elements.find(element => element.text.trim() == bottomText);
+    if (topElement === undefined)
+        return undefined;
+
+    let x = topElement.x;
+    let y = topElement.y + topElement.height;
+    let width = (rightElement === undefined) ? Number.MAX_VALUE : (rightElement.x - x);
+    let height = (bottomElement === undefined) ? Number.MAX_VALUE : (bottomElement.y - y);
+
+    let bounds: Rectangle = { x: x, y: y, width: width, height: height };
+
+    // Gather together all elements that are at least 50% within the bounding rectangle.
+
+    let intersectingElements: Element[] = []
+    for (let element of elements) {
+        let intersectingBounds = intersect(element, bounds);
+        let intersectingArea = intersectingBounds.width * intersectingBounds.height;
+        let elementArea = element.width * element.height;
+        if (elementArea > 0 && intersectingArea * 2 > elementArea && element.text !== ":")
+            intersectingElements.push(element);
+    }
+
+    // Sort the elements by Y co-ordinate and then by X co-ordinate.
+
+    let elementComparer = (a, b) => (a.y > b.y) ? 1 : ((a.y < b.y) ? -1 : ((a.x > b.x) ? 1 : ((a.x < b.x) ? -1 : 0)));
+    intersectingElements.sort(elementComparer);
+
+    // Join the elements into a single string.
+
+    return intersectingElements.map(element => element.text).join(" ").trim().replace(/\s\s+/g, " ");
+}
+
 // Formats (and corrects) an address.
 
 function formatAddress(address: string) {
@@ -194,100 +317,37 @@ function formatAddress(address: string) {
 // Parses the details from the elements associated with a single development application.
 
 function parseApplicationElements(elements: Element[], startElement: Element, informationUrl: string) {
-    // // Get the application number.
+    // Get the application number.
 
-    // let xComparer = (a, b) => (a.x > b.x) ? 1 : ((a.x < b.x) ? -1 : 0);
-    // let applicationNumberElements = elements
-    //     .filter(element => element.x < applicantElement.x && element.y < startElement.y + 2 * startElement.height)
-    //     .sort(xComparer);
+    let applicationNumber = getLeftText(elements, "Application Date:", undefined, "Date Recieved:");  // note that "Recieved" is spelt incorrectly (it should be "Received")
+    if (applicationNumber === undefined) {
+        let elementSummary = elements.map(element => `[${element.text}]`).join("");
+        console.log(`Could not find the application number on the PDF page for the current development application.  The development application will be ignored.  Elements: ${elementSummary}`);
+        return undefined;
+    }
+    console.log(`    Found \"${applicationNumber}\".`);
 
-    // let applicationNumber = undefined;
-    // for (let index = 1; index <= applicationNumberElements.length; index++) {
-    //     let text = applicationNumberElements.slice(0, index).map(element => element.text).join("").replace(/\s/g, "");
-    //     if (/\/[0-9]{4}$/.test(text)) {
-    //         applicationNumber = text;
-    //         break;
-    //     }
-    // }
-    // if (applicationNumber === undefined) {
-    //     let elementSummary = elements.map(element => `[${element.text}]`).join("");
-    //     console.log(`Could not find the application number on the PDF page for the current development application.  The development application will be ignored.  Elements: ${elementSummary}`);
-    //     return undefined;
-    // }
-    // console.log(`    Found \"${applicationNumber}\".`);
+    // Get the description.
 
-    // // Get the application date element (text to the right of this constitutes the address).
+    let description = "";
+    if (elements.find(element => element.text.trim() === "Valuation:") === undefined)
+        description = getDownText(elements, "Development Description", "Fees", "Proposed No. Allotments:");
+    else
+        description = getDownText(elements, "Development Description", "Fees", "Valuation:");
 
-    // let applicationDateElement: Element = undefined;
-    // let applicationDateRectangle : Rectangle = { x: applicationElement.x, y: 0, width: applicationElement.width, height : applicationElement.height };
-    // for (let element of elements) {
-    //     applicationDateRectangle.y = element.y;
-    //     if (getArea(element) > 0 &&  // ensure a valid element
-    //         getArea(element) > 0.5 * getArea(applicationDateRectangle) &&  // ensure that the element is approximately the same size (within 50%) as what is expected for the date rectangle
-    //         getArea(intersect(element, applicationDateRectangle)) > 0.75 * getArea(element)) {  // determine if the element mostly overlaps (by more than 75%) the rectangle where the date is expected to appear
-    //         applicationDateElement = element;
-    //         break;
-    //     }
-    // }
-    // if (applicationDateElement === undefined) {
-    //     let elementSummary = elements.map(element => `[${element.text}]`).join("");
-    //     console.log(`Could not find the application date on the PDF page for the current development application.  The development application will be ignored.  Elements: ${elementSummary}`);
-    //     return undefined;
-    // }
+    // Get the received date.
 
-    // // Get the received date.
+    let receivedDateText = getRightText(elements, "Date Recieved:", "Subject Land:", "Planning Approval:");  // note that "Recieved" is spelt incorrectly (it should be "Received")
+    let receivedDate = (receivedDateText === undefined) ? undefined : moment(receivedDateText.trim(), "D/MM/YYYY", true);
 
-    // let receivedDateElement: Element = undefined;
-    // let receivedDateRectangle : Rectangle = { x: applicationElement.x, y: 0, width: applicationElement.width, height : applicationElement.height };
-    // for (let element of elements) {
-    //     receivedDateRectangle.y = element.y;
-    //     if (getArea(element) > 0 &&  // ensure a valid element
-    //         getArea(element) > 0.5 * getArea(receivedDateRectangle) &&  // ensure that the element is approximately the same size (within 50%) as what is expected for the date rectangle
-    //         getArea(intersect(element, receivedDateRectangle)) > 0.75 * getArea(element) &&  // determine if the element mostly overlaps (by more than 75%) the rectangle where the date is expected to appear
-    //         element.y > applicationDateElement.y + applicationDateElement.height &&  // ignore the application date (the recieved date appears futher down)
-    //         moment(element.text.trim(), "D/MM/YYYY", true).isValid()) {  // ensure that "Received" and "Date" text are ignored (keep searching until a valid date is found)
-    //         receivedDateElement = element;
-    //         break;
-    //     }
-    // }
+    // Get the address.
 
-    // if (receivedDateElement === undefined)
-    //     receivedDateElement = applicationDateElement;  // fallback to the application date
-
-    // let receivedDate = moment(applicationDateElement.text.trim(), "D/MM/YYYY", true);
-    
-    // // Get the address (to the right of the application date element and to the left of the
-    // // "Proposal" column heading).  The address seems to always be a single line.
-
-    // let address = elements
-    //     .filter(element =>
-    //         element.x > applicationDateElement.x + applicationDateElement.width &&  // the address elements must be to the right of the application date
-    //         getVerticalOverlapPercentage(applicationDateElement, element) > 50 &&  // the address element must overlap vertically with the application date element
-    //         element.x < proposalElement.x - proposalElement.height / 2)  // the address element must be at least a little to the left of the "Proposal" heading text (arbitrarily use half the height)
-    //     .sort(xComparer)
-    //     .map(element => element.text)
-    //     .join("");
-
-    // address = formatAddress(address);  // add the state and post code to the address
-
-    // // Get the description.
-
-    // let description = "";
-
-    // if (referralsElement !== undefined) {
-    //     let descriptionElements = elements
-    //         .filter(element =>
-    //             element.x > proposalElement.x - proposalElement.height / 2 &&  // the description elements may start at least a little to the left to the "Proposal" heading
-    //             element.x < referralsElement.x);  // the description elements are to the left of the "Referrals/" heading
-        
-    //     let previousY = undefined;
-    //     for (let descriptionElement of descriptionElements) {
-    //         if (previousY !== undefined && descriptionElement.y > previousY + descriptionElement.height / 2)  // a new line
-    //             description += " ";
-    //         description += descriptionElement.text;
-    //         previousY = descriptionElement.y;
-    //     }
-    // }
+    let address = getDownText(elements, "Subject Land:", "Development Description", undefined);
+    if (address === undefined || address.trim() === "") {
+        let elementSummary = elements.map(element => `[${element.text}]`).join("");
+        console.log(`Could not find the address for the current development application.  The development application will be ignored.  Elements: ${elementSummary}`);
+        return undefined;
+    }
 
     return {
         applicationNumber: applicationNumber,
@@ -301,17 +361,17 @@ function parseApplicationElements(elements: Element[], startElement: Element, in
 }
 
 // Finds the start element of each development application on the current PDF page (there are
-// typically two development applications on a single page and each development application
-// typically begins with the text "Lodgement").
+// typically four development applications on a single page and each development application
+// typically begins with the text "Application Date:").
 
 function findStartElements(elements: Element[]) {
-    // Examine all the elements on the page that being with "L" or "l".
+    // Examine all the elements on the page that being with "A" or "a".
     
     let startElements: Element[] = [];
-    for (let element of elements.filter(element => element.text.trim().toLowerCase().startsWith("l"))) {
-        // Extract up to 10 elements to the right of the element that has text starting with the
-        // letter "l" (and so may be the start of the "Lodgement" text).  Join together the
-        // elements to the right in an attempt to find the best match to "Lodgement".
+    for (let element of elements.filter(element => element.text.trim().toLowerCase().startsWith("a"))) {
+        // Extract up to 18 elements to the right of the element that has text starting with the
+        // letter "a" (and so may be the start of the "Application Date:" text).  Join together
+        // the elements to the right in an attempt to find the best match to "Application Date:".
 
         let rightElement = element;
         let rightElements: Element[] = [];
@@ -321,14 +381,14 @@ function findStartElements(elements: Element[]) {
             rightElements.push(rightElement);
         
             let text = rightElements.map(element => element.text).join("").replace(/\s/g, "").toLowerCase();
-            if (text.length >= 10)  // stop once the text is too long
+            if (text.length >= 18)  // stop once the text is too long
                 break;
-            if (text.length >= 8) {  // ignore until the text is close to long enough
-                if (text === "lodgement")
+            if (text.length >= 15) {  // ignore until the text is close to long enough
+                if (text === "applicationdate:")
                     matches.push({ element: rightElement, threshold: 0 });
-                else if (didyoumean(text, [ "Lodgement" ], { caseSensitive: false, returnType: "first-closest-match", thresholdType: "edit-distance", threshold: 1, trimSpace: true }) !== null)
+                else if (didyoumean(text, [ "ApplicationDate:" ], { caseSensitive: false, returnType: "first-closest-match", thresholdType: "edit-distance", threshold: 1, trimSpace: true }) !== null)
                     matches.push({ element: rightElement, threshold: 1 });
-                else if (didyoumean(text, [ "Lodgement" ], { caseSensitive: false, returnType: "first-closest-match", thresholdType: "edit-distance", threshold: 2, trimSpace: true }) !== null)
+                else if (didyoumean(text, [ "ApplicationDate:" ], { caseSensitive: false, returnType: "first-closest-match", thresholdType: "edit-distance", threshold: 2, trimSpace: true }) !== null)
                     matches.push({ element: rightElement, threshold: 2 });
             }
 
@@ -341,7 +401,7 @@ function findStartElements(elements: Element[]) {
             let bestMatch = matches.reduce((previous, current) =>
                 (previous === undefined ||
                 previous.threshold < current.threshold ||
-                (previous.threshold === current.threshold && Math.abs(previous.text.length - "Lodgement".length) <= Math.abs(current.text.length - "Lodgement".length)) ? current : previous), undefined);
+                (previous.threshold === current.threshold && Math.abs(previous.text.length - "Application Date:".length) <= Math.abs(current.text.length - "Application Date:".length)) ? current : previous), undefined);
             startElements.push(bestMatch.element);
         }
     }

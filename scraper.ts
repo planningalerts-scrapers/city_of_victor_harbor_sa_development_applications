@@ -359,7 +359,7 @@ function parseApplicationElements(elements: Element[], startElement: Element, in
     return {
         applicationNumber: applicationNumber,
         address: address,
-        description: ((description.trim() === "") ? "No Description Provided" : description),
+        description: ((description !== undefined && description.trim() !== "") ? description : "No Description Provided"),
         informationUrl: informationUrl,
         commentUrl: CommentUrl,
         scrapeDate: moment().format("YYYY-MM-DD"),
@@ -407,8 +407,8 @@ function findStartElements(elements: Element[]) {
         if (matches.length > 0) {
             let bestMatch = matches.reduce((previous, current) =>
                 (previous === undefined ||
-                previous.threshold < current.threshold ||
-                (previous.threshold === current.threshold && Math.abs(previous.text.length - "Application Date:".length) <= Math.abs(current.text.length - "Application Date:".length)) ? current : previous), undefined);
+                current.threshold < previous.threshold ||
+                (current.threshold === previous.threshold && Math.abs(current.text.trim().length - "Application Date:".length) <= Math.abs(previous.text.trim().length - "Application Date:".length)) ? current : previous), undefined);
             startElements.push(bestMatch.element);
         }
     }
@@ -543,10 +543,11 @@ async function main() {
     let $ = cheerio.load(body);
     
     let pdfUrls: string[] = [];
-    for (let element of $("p a[href$='.pdf']").get()) {
+    for (let element of $("p a").get()) {
         let pdfUrl = new urlparser.URL(element.attribs.href, DevelopmentApplicationsUrl);
-        if (!pdfUrls.some(url => url === pdfUrl.href))  // avoid duplicates
-            pdfUrls.push(pdfUrl.href);
+        if (pdfUrl.href.toLowerCase().includes(".pdf"))
+            if (!pdfUrls.some(url => url === pdfUrl.href))  // avoid duplicates
+                pdfUrls.push(pdfUrl.href);
     }
 
     if (pdfUrls.length === 0) {

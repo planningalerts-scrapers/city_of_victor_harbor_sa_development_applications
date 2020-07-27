@@ -575,6 +575,7 @@ async function main() {
             !pdfUrl.href.toLowerCase().includes("outbuilding") &&
             !pdfUrl.href.toLowerCase().includes("owner-builder") &&
             !pdfUrl.href.toLowerCase().includes("private-structures") &&
+            !pdfUrl.href.toLowerCase().includes("process_for_assessment") &&
             !pdfUrl.href.toLowerCase().includes("rainwater") &&
             !pdfUrl.href.toLowerCase().includes("retaining") &&
             !pdfUrl.href.toLowerCase().includes("signs") &&

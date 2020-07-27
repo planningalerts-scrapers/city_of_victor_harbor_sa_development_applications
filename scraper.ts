@@ -554,7 +554,8 @@ async function main() {
             !pdfUrl.href.toLowerCase().includes("da-forms") &&
             !pdfUrl.href.toLowerCase().includes("declaration") &&
             !pdfUrl.href.toLowerCase().includes("demolition") &&
-            !pdfUrl.href.toLowerCase().includes("development plan") &&
+            !pdfUrl.href.toLowerCase().includes("development-plan") &&
+            !pdfUrl.href.toLowerCase().includes("development_plan") &&
             !pdfUrl.href.toLowerCase().includes("fact sheet") &&
             !pdfUrl.href.toLowerCase().includes("fact-sheet") &&
             !pdfUrl.href.toLowerCase().includes("fences") &&

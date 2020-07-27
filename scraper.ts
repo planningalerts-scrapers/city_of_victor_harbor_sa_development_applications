@@ -542,7 +542,13 @@ async function main() {
     let pdfUrls: string[] = [];
     for (let element of $("p a").get()) {
         let pdfUrl = new urlparser.URL(element.attribs.href, DevelopmentApplicationsUrl);
-        if (pdfUrl.href.toLowerCase().includes(".pdf"))
+        if (pdfUrl.href.toLowerCase().includes(".pdf") &&
+            !$(element).text().toLowerCase().includes("application form") &&
+            !$(element).text().toLowerCase().includes("da-forms") &&
+            !$(element).text().toLowerCase().includes("declaration") &&
+            !$(element).text().toLowerCase().includes("demolition") &&
+            !$(element).text().toLowerCase().includes("development plan") &&
+            !$(element).text().toLowerCase().includes("fact sheets"))            
             if (!pdfUrls.some(url => url === pdfUrl.href))  // avoid duplicates
                 pdfUrls.push(pdfUrl.href);
     }

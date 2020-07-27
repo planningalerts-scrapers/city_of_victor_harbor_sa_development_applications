@@ -543,16 +543,37 @@ async function main() {
     for (let element of $("p a").get()) {
         let pdfUrl = new urlparser.URL(element.attribs.href, DevelopmentApplicationsUrl);
         if (pdfUrl.href.toLowerCase().includes(".pdf") &&
+            !$(element).text().toLowerCase().includes("appeal") &&
+            !$(element).text().toLowerCase().includes("appendix") &&
             !$(element).text().toLowerCase().includes("application form") &&
             !$(element).text().toLowerCase().includes("application-form") &&
             !$(element).text().toLowerCase().includes("checklist") &&
+            !$(element).text().toLowerCase().includes("civil_issues") &&
             !$(element).text().toLowerCase().includes("compliance") &&
+            !$(element).text().toLowerCase().includes("corner_fences") &&
             !$(element).text().toLowerCase().includes("da-forms") &&
             !$(element).text().toLowerCase().includes("declaration") &&
             !$(element).text().toLowerCase().includes("demolition") &&
             !$(element).text().toLowerCase().includes("development plan") &&
-            !$(element).text().toLowerCase().includes("fact sheets") &&
+            !$(element).text().toLowerCase().includes("fact sheet") &&
+            !$(element).text().toLowerCase().includes("fact-sheet") &&
+            !$(element).text().toLowerCase().includes("front-fencing") &&
+            !$(element).text().toLowerCase().includes("guidelines") &&
+            !$(element).text().toLowerCase().includes("home_activities") &&
+            !$(element).text().toLowerCase().includes("information-sheet") &&
+            !$(element).text().toLowerCase().includes("jetties") &&
             !$(element).text().toLowerCase().includes("inspections") &&
+            !$(element).text().toLowerCase().includes("lakes") &&
+            !$(element).text().toLowerCase().includes("lodging-a") &&
+            !$(element).text().toLowerCase().includes("noncomplying") &&
+            !$(element).text().toLowerCase().includes("private-structures") &&
+            !$(element).text().toLowerCase().includes("rainwater") &&
+            !$(element).text().toLowerCase().includes("retaining") &&
+            !$(element).text().toLowerCase().includes("smoke_alarms") &&
+            !$(element).text().toLowerCase().includes("solar") &&
+            !$(element).text().toLowerCase().includes("swimming") &&
+            !$(element).text().toLowerCase().includes("vineyard") &&
+            !$(element).text().toLowerCase().includes("waste") &&
             !$(element).text().toLowerCase().includes("work-stages"))
             if (!pdfUrls.some(url => url === pdfUrl.href))  // avoid duplicates
                 pdfUrls.push(pdfUrl.href);

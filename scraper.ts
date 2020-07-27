@@ -17,7 +17,7 @@ import * as didyoumean from "didyoumean2";
 
 sqlite3.verbose();
 
-const DevelopmentApplicationsUrl = "http://www.victor.sa.gov.au/page.aspx?u=782";
+const DevelopmentApplicationsUrl = "https://www.victor.sa.gov.au/council-activities/development/development-applications";
 const CommentUrl = "mailto:localgov@victor.sa.gov.au";
 
 declare const process: any;
@@ -56,7 +56,7 @@ async function insertRow(database, developmentApplication) {
                 console.error(error);
                 reject(error);
             } else {
-                console.log(`    Saved: application \"${developmentApplication.applicationNumber}\" with address \"${developmentApplication.address}\", description \"${developmentApplication.description}\" and received date \"${developmentApplication.receivedDate}\" into the database.`);
+                console.log(`    Saved application \"${developmentApplication.applicationNumber}\" with address \"${developmentApplication.address}\", description \"${developmentApplication.description}\" and received date \"${developmentApplication.receivedDate}\" to the database.`);
                 sqlStatement.finalize();  // releases any locks
                 resolve(row);
             }
@@ -356,7 +356,7 @@ function parseApplicationElements(elements: Element[], startElement: Element, in
     return {
         applicationNumber: applicationNumber,
         address: address,
-        description: ((description.trim() === "") ? "No Description Provided" : description),
+        description: ((description !== undefined && description.trim() !== "") ? description : "No Description Provided"),
         informationUrl: informationUrl,
         commentUrl: CommentUrl,
         scrapeDate: moment().format("YYYY-MM-DD"),
@@ -404,8 +404,8 @@ function findStartElements(elements: Element[]) {
         if (matches.length > 0) {
             let bestMatch = matches.reduce((previous, current) =>
                 (previous === undefined ||
-                previous.threshold < current.threshold ||
-                (previous.threshold === current.threshold && Math.abs(previous.text.length - "Application Date:".length) <= Math.abs(current.text.length - "Application Date:".length)) ? current : previous), undefined);
+                current.threshold < previous.threshold ||
+                (current.threshold === previous.threshold && Math.abs(current.text.trim().length - "Application Date:".length) <= Math.abs(previous.text.trim().length - "Application Date:".length)) ? current : previous), undefined);
             startElements.push(bestMatch.element);
         }
     }
@@ -540,10 +540,53 @@ async function main() {
     let $ = cheerio.load(body);
     
     let pdfUrls: string[] = [];
-    for (let element of $("p a[href$='.pdf']").get()) {
+    for (let element of $("p a").get()) {
         let pdfUrl = new urlparser.URL(element.attribs.href, DevelopmentApplicationsUrl);
-        if (!pdfUrls.some(url => url === pdfUrl.href))  // avoid duplicates
-            pdfUrls.push(pdfUrl.href);
+        if (pdfUrl.href.toLowerCase().includes(".pdf") &&
+            !pdfUrl.href.toLowerCase().includes("appeal") &&
+            !pdfUrl.href.toLowerCase().includes("appendix") &&
+            !pdfUrl.href.toLowerCase().includes("application form") &&
+            !pdfUrl.href.toLowerCase().includes("application-form") &&
+            !pdfUrl.href.toLowerCase().includes("b-and-b") &&
+            !pdfUrl.href.toLowerCase().includes("checklist") &&
+            !pdfUrl.href.toLowerCase().includes("civil_issues") &&
+            !pdfUrl.href.toLowerCase().includes("compliance") &&
+            !pdfUrl.href.toLowerCase().includes("da-forms") &&
+            !pdfUrl.href.toLowerCase().includes("declaration") &&
+            !pdfUrl.href.toLowerCase().includes("demolition") &&
+            !pdfUrl.href.toLowerCase().includes("development-plan") &&
+            !pdfUrl.href.toLowerCase().includes("development_plan") &&
+            !pdfUrl.href.toLowerCase().includes("fact sheet") &&
+            !pdfUrl.href.toLowerCase().includes("fact-sheet") &&
+            !pdfUrl.href.toLowerCase().includes("fences") &&
+            !pdfUrl.href.toLowerCase().includes("fencing") &&
+            !pdfUrl.href.toLowerCase().includes("guidelines") &&
+            !pdfUrl.href.toLowerCase().includes("heritage") &&
+            !pdfUrl.href.toLowerCase().includes("home_activities") &&
+            !pdfUrl.href.toLowerCase().includes("information-sheet") &&
+            !pdfUrl.href.toLowerCase().includes("jetties") &&
+            !pdfUrl.href.toLowerCase().includes("info-required") &&
+            !pdfUrl.href.toLowerCase().includes("inspections") &&
+            !pdfUrl.href.toLowerCase().includes("lakes") &&
+            !pdfUrl.href.toLowerCase().includes("levy") &&
+            !pdfUrl.href.toLowerCase().includes("liquor") &&
+            !pdfUrl.href.toLowerCase().includes("lodging-a") &&
+            !pdfUrl.href.toLowerCase().includes("noncomplying") &&
+            !pdfUrl.href.toLowerCase().includes("outbuilding") &&
+            !pdfUrl.href.toLowerCase().includes("owner-builder") &&
+            !pdfUrl.href.toLowerCase().includes("private-structures") &&
+            !pdfUrl.href.toLowerCase().includes("process_for_assessment") &&
+            !pdfUrl.href.toLowerCase().includes("rainwater") &&
+            !pdfUrl.href.toLowerCase().includes("retaining") &&
+            !pdfUrl.href.toLowerCase().includes("signs") &&
+            !pdfUrl.href.toLowerCase().includes("smoke_alarms") &&
+            !pdfUrl.href.toLowerCase().includes("solar") &&
+            !pdfUrl.href.toLowerCase().includes("swimming") &&
+            !pdfUrl.href.toLowerCase().includes("vineyard") &&
+            !pdfUrl.href.toLowerCase().includes("waste") &&
+            !pdfUrl.href.toLowerCase().includes("work-stages"))
+            if (!pdfUrls.some(url => url === pdfUrl.href))  // avoid duplicates
+                pdfUrls.push(pdfUrl.href);
     }
 
     if (pdfUrls.length === 0) {
